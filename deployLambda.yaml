@@ -1,0 +1,21 @@
+Type: AWS::Lambda::Function
+Properties:
+  Code:
+    Code
+  Description: "This cfn template would deploye a labda function to AWS.  The lamda function would be used to find instance in the environment by their associated tags taking a key:value as parameter"
+  Environment:
+  Handler: "findInstancesByTag"
+  KmsKeyArn: String
+  Layers:
+    - String
+  MemorySize: Integer
+  ReservedConcurrentExecutions: Integer
+  Role: String
+  Runtime: String
+  Tags:
+    - Tag
+  Timeout: Integer
+  TracingConfig:
+    TracingConfig
+  VpcConfig:
+    VpcConfig
