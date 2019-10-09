@@ -1,0 +1,42 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'This CFN template would generate a lambda function that would return a list of ids of instances that has tags matching a key:val that the fucntion searches by'
+Resources:
+  Lambda1:
+    Type: "AWS::Lambda::Function"
+    Properties:
+        Description: Test with Cloud Formation
+        FunctionName: listResourcesByTag
+        Handler: index.lambda_handler
+        Role: arn:aws:iam::357843261210:role/EC2_ReadOnly
+        Runtime: python2.7
+        Code:
+            ZipFile: >
+                from boto3.session import Session
+                from botocore.exceptions import ClientError
+                aws_access_key = 'AKIAVGUI624NJRNLMQPO'
+                aws_secret_key = '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'
+                region = 'us-east-1'
+
+                def lambda_handler(event, context):
+                 try:
+                    sess = Session(aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
+                    ec2_conn = sess.client(service_name='ec2', region_name=region)
+                    instance_ids = []
+                    reservations = ec2_conn.describe_instances(
+                                              Filters=[
+                                                  {
+                                                      'Name': 'tag:Server_Group',
+                                                      'Values': [
+                                                          event["Server_Group"],
+                                                      ]
+                                                  },
+                                              ])['Reservations']
+
+                    for reservation in reservations:
+                        instances = reservation['Instances']
+                        for instance in instances:
+                            instance_ids.append(instance['InstanceId'])
+                    return "The matching instances: {}".format(','.join(instance_ids))
+                   except ClientError as e:
+                    print(e)
